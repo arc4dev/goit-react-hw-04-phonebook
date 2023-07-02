@@ -13,3 +13,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+h1 {
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 3rem;
+}
+
+p,
+label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+button {
+  padding: 0.3em 0.5em;
+  font-weight: bold;
+  border-radius: 0.3em;
+  border: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}

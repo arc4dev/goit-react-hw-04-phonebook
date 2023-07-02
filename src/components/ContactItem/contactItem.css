@@ -1,0 +1,6 @@
+.contact-item {
+  display: flex;
+  gap: 0.3em;
+  justify-content: flex-start;
+  align-items: center;
+}
