@@ -1,37 +1,37 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { nanoid } from 'nanoid';
 import { Filter } from './Filter/Filter';
 
 //App
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
+function App() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    getLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    setLocalStorage();
+  }, [contacts]);
+
+  const getLocalStorage = () => {
+    const contactsArr = JSON.parse(localStorage.getItem('contacts'));
+
+    console.log(contactsArr);
+
+    if (!contactsArr) return;
+
+    setContacts(contactsArr);
   };
 
-  getLocalStorage = () => {
-    const contacts = JSON.parse(localStorage.getItem('contacts'));
-
-    if (!contacts) return;
-
-    this.setState({ contacts });
+  const setLocalStorage = () => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
   };
 
-  setLocalStorage = state => {
-    localStorage.setItem('contacts', JSON.stringify(state.contacts));
-  };
-
-  componentDidMount() {
-    this.getLocalStorage();
-  }
-
-  componentDidUpdate() {
-    this.setLocalStorage(this.state);
-  }
-
-  addContact = e => {
+  const addContact = e => {
     e.preventDefault();
 
     const name = e.target.elements.name;
@@ -39,7 +39,7 @@ class App extends Component {
 
     // check if the user exists
     if (
-      this.state.contacts.some(
+      contacts.some(
         contact => contact.name.toLowerCase() === name.value.toLowerCase()
       )
     )
@@ -54,72 +54,64 @@ class App extends Component {
     };
 
     // check if the user patterns are valid
-    if (!this.validatePattern(name) || !this.validatePattern(number))
+    if (!validatePattern(name) || !validatePattern(number))
       return alert('Twoj numer lub imie maja zly format. Sprobuj ponownie!');
 
-    // set state
-    this.setState(state => ({
-      contacts: [...state.contacts, user],
-    }));
+    // set contacts
+    setContacts(prevContacts => [...prevContacts, user]);
 
     e.target.reset();
   };
 
-  validatePattern = htmlInput => {
+  const validatePattern = htmlInput => {
     const pattern = new RegExp(htmlInput.pattern);
     return pattern.test(htmlInput.value);
   };
 
-  handleFilterChange = e => {
-    this.setState({
-      filter: e.target.value.trim().toLowerCase(),
+  const handleFilterChange = e => {
+    setFilter(e.target.value.trim().toLowerCase());
+  };
+
+  const getFilteredContacts = () => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().startsWith(filter)
+    );
+  };
+
+  const deleteContact = e => {
+    // find id
+    console.log(e.target.id);
+    const index = contacts.findIndex(contact => contact.name === e.target.id);
+    console.log(index);
+
+    setContacts(prevContacts => {
+      console.log(`PREV: ${prevContacts}, CURR: ${contacts}`);
+      prevContacts.slice(0, index).concat(prevContacts.slice(index + 1));
     });
   };
 
-  getFilteredContacts = () => {
-    return this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().startsWith(this.state.filter)
-    );
-  };
-
-  deleteContact = e => {
-    // find idd
-    const index = this.state.contacts.findIndex(
-      contact => contact.name === e.target.id
-    );
-
-    // delete contact
-    this.setState(state => ({
-      contacts: state.contacts
-        .slice(0, index)
-        .concat(state.contacts.slice(index + 1)),
-    }));
-  };
-
-  render() {
-    return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-          flexDirection: 'column',
-        }}
-      >
-        <h1>PhoneBook</h1>
-        <ContactForm handleSubmit={this.addContact} />
-        <h2>Contacts</h2>
-        <Filter handleChange={this.handleFilterChange} />
-        <ContactList
-          contacts={this.getFilteredContacts()}
-          handleClick={this.deleteContact}
-        />
-      </div>
-    );
-  }
+  return (
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+        flexDirection: 'column',
+      }}
+    >
+      <h1>PhoneBook</h1>
+      <ContactForm handleSubmit={addContact} />
+      <h2>Contacts</h2>
+      <Filter handleChange={handleFilterChange} />
+      <ContactList
+        contacts={getFilteredContacts()}
+        handleClick={deleteContact}
+      />
+    </div>
+  );
 }
 
 export default App;
