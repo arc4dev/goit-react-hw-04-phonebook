@@ -8,19 +8,21 @@ import { Filter } from './Filter/Filter';
 function App() {
   const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     getLocalStorage();
   }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     setLocalStorage();
   }, [contacts]);
 
   const getLocalStorage = () => {
     const contactsArr = JSON.parse(localStorage.getItem('contacts'));
-
-    console.log(contactsArr);
 
     if (!contactsArr) return;
 
@@ -79,15 +81,11 @@ function App() {
   };
 
   const deleteContact = e => {
-    // find id
-    console.log(e.target.id);
-    const index = contacts.findIndex(contact => contact.name === e.target.id);
-    console.log(index);
+    const toDelete = contacts.find(contact => contact.name === e.target.id);
 
-    setContacts(prevContacts => {
-      console.log(`PREV: ${prevContacts}, CURR: ${contacts}`);
-      prevContacts.slice(0, index).concat(prevContacts.slice(index + 1));
-    });
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== toDelete.id)
+    );
   };
 
   return (
