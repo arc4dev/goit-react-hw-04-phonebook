@@ -1,8 +1,8 @@
-import './contactForm.css';
+import css from './ContactForm.module.css';
 
 export const ContactForm = ({ handleSubmit }) => {
   return (
-    <form className="contact-form" onSubmit={handleSubmit}>
+    <form className={css.contact_form} onSubmit={handleSubmit}>
       <label htmlFor="name">Name</label>
       <input
         type="text"

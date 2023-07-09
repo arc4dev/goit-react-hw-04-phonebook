@@ -1,4 +1,4 @@
-import './contactItem.css';
+import css from './ContactItem.module.css';
 
 const { Component } = require('react');
 
@@ -14,7 +14,7 @@ class ContactItem extends Component {
 
   render() {
     return (
-      <li className="contact-item">
+      <li className={css.contact_item}>
         <p>
           {this.state.name} {this.state.number}
         </p>
